@@ -1,4 +1,4 @@
-# gulp-favicons [![Build Status](https://travis-ci.org/haydenbleasel/favicons.svg?branch=gulp)](https://travis-ci.org/haydenbleasel/favicons)
+# gulp-favicons [![Build Status](https://travis-ci.org/haydenbleasel/gulp-favicons.svg?branch=master)](https://travis-ci.org/haydenbleasel/gulp-favicons)
 
 Favicons generator for Gulp. Simple wrapper around [favicons](https://github.com/haydenbleasel/favicons). Installed through NPM with:
 
