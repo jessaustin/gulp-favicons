@@ -64,9 +64,11 @@
                         appDescription: info.description,
                         developer: info.author,
                         developerURL: info ? (info.url ? path.join(info.url, '/') : null) : null,
+                        version: 1.0,
                         background: null,
                         index: null,
                         url: info ? (info.url ? path.join(info.url, '/') : null) : null,
+                        silhouette: false,
                         logging: false
                     }
                 });
@@ -83,9 +85,9 @@
 
                 options.files.dest = path.join(path.dirname(file.path), options.files.dest);
 
-                favicons(options, function (error, html) {
+                favicons(options, function (html) {
                     file.contents = new Buffer(_.flatten(html).join(' '));
-                    return cb(error, file);
+                    return cb(null, file);
                 });
 
             });
