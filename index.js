@@ -18,26 +18,21 @@
         function findInfo(source, callback) {
             fs.readFile(source, function (error, data) {
                 var $, info = {};
-                if (error) {
-                    throw error;
-                }
                 $ = cheerio.load(data);
                 info.favicon = $('link[rel="favicons"]').attr('href');
                 info.url = $('link[rel="canonical"]').attr('href');
                 info.title = $('title').text();
                 info.description = $('meta[name="description"]').attr('content');
                 info.author = $('meta[name="author"]').attr('content');
-                return callback(info);
+                return callback(error, info);
             });
         }
 
-        _.mixin({ 'mergeDefaults': mergeDefaults });
-
         return through2.obj(function (file, enc, cb) {
 
-            findInfo(file.path, function (info) {
+            findInfo(file.path, function (error, info) {
 
-                var options = _.mergeDefaults(params || {}, {
+                var options = mergeDefaults(params || {}, {
                     files: {
                         src: info ? (info.favicon ? path.join(path.dirname(file.path), info.favicon) : null) : null,
                         dest: params.dest,
@@ -85,9 +80,9 @@
 
                 options.files.dest = path.join(path.dirname(file.path), options.files.dest);
 
-                favicons(options, function (html) {
+                favicons(options, function (error, html) {
                     file.contents = new Buffer(_.flatten(html).join(' '));
-                    return cb(null, file);
+                    return cb(error, file);
                 });
 
             });
