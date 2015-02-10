@@ -19,7 +19,7 @@ gulp.task('default', function () {
 });
 ```
 
-If you don't specify some options, gulp-humans checks your source HTML file for:
+If you don't specify some options, gulp-favicons checks your source HTML file for:
 
 ```
 <title>...</title>
