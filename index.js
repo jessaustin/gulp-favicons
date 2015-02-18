@@ -28,6 +28,50 @@
             });
         }
 
+        if (params.hasOwnProperty('settings') &&
+                params.settings.hasOwnProperty('vinylMode') &&
+                params.settings.vinylMode) {
+
+            var options = favicons.getConfig(params);
+
+            return through2.obj(function (file, enc, cb) {
+
+                if (file.isNull()) {
+                    cb(null, file);
+                    return;
+                }
+
+                if (file.isStream()) {
+                    cb(new util.PluginError('gulp-favicons',
+                            'Streaming not supported'));
+                    return;
+                }
+
+                options.data.favicon_generation.master_picture = { type: 'inline', content: file.contents.toString('base64') };
+
+                return cb();
+
+            }, function (cb) {
+
+                var that = this;
+
+                favicons.generateFaviconStream(options, function (error, data) {
+                    console.log(data);
+                })
+                    .on('entry', function (entry) {
+                        that.push(new util.File({
+                            path: entry.path,
+                            contents: entry
+                        }));
+                    })
+                    .on('end', function () {
+                        cb();
+                    });
+
+            });
+
+        }
+
         return through2.obj(function (file, enc, cb) {
 
             findInfo(file.path, function (error, info) {

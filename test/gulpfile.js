@@ -2,10 +2,9 @@ var gulp = require('gulp'),
     favicons = require('../');
 
 gulp.task('default', function () {
-    gulp.src('index.html')
+    gulp.src('logo.png')
         .pipe(favicons({
-            files: { dest: 'images/' },
-            settings: { background: '#1d1d1d' }
+          settings: { background: '#1d1d1d' , vinylMode: true }
         }))
-        .pipe(gulp.dest('./'));
+        .pipe(gulp.dest('./images'));
 });
