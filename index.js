@@ -13,7 +13,7 @@
         path = require('path'),
         favicons = require('favicons');
 
-    module.exports = function (params) {
+    module.exports = function (params, htmlCodeCallback) {
 
         function findInfo(source, callback) {
             fs.readFile(source, function (error, data) {
@@ -56,16 +56,19 @@
                 var that = this;
 
                 favicons.generateFaviconStream(options, function (error, data) {
-                    console.log(data);
+                    if (error) {
+                        that.end();
+                        cb(error);
+                    }
+                    if (htmlCodeCallback) {
+                        htmlCodeCallback(data.favicon_generation_result.favicon.html_code);
+                    }
                 })
                     .on('entry', function (entry) {
                         that.push(new util.File({
                             path: entry.path,
                             contents: entry
                         }));
-                    })
-                    .on('end', function () {
-                        cb();
                     });
 
             });
