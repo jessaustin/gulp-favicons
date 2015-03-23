@@ -13,7 +13,7 @@
         path = require('path'),
         favicons = require('favicons');
 
-    module.exports = function (params) {
+    module.exports = function (params, htmlCodeCallback) {
 
         function findInfo(source, callback) {
             fs.readFile(source, function (error, data) {
@@ -26,6 +26,53 @@
                 info.author = $('meta[name="author"]').attr('content');
                 return callback(error, info);
             });
+        }
+
+        if (params.hasOwnProperty('settings') &&
+                params.settings.hasOwnProperty('vinylMode') &&
+                params.settings.vinylMode) {
+
+            var options = favicons.getConfig(params);
+
+            return through2.obj(function (file, enc, cb) {
+
+                if (file.isNull()) {
+                    cb(null, file);
+                    return;
+                }
+
+                if (file.isStream()) {
+                    cb(new util.PluginError('gulp-favicons',
+                            'Streaming not supported'));
+                    return;
+                }
+
+                options.data.favicon_generation.master_picture = { type: 'inline', content: file.contents.toString('base64') };
+
+                return cb();
+
+            }, function (cb) {
+
+                var that = this;
+
+                favicons.generateFaviconStream(options, function (error, data) {
+                    if (error) {
+                        that.end();
+                        cb(error);
+                    }
+                    if (htmlCodeCallback) {
+                        htmlCodeCallback(data.favicon_generation_result.favicon.html_code);
+                    }
+                })
+                    .on('entry', function (entry) {
+                        that.push(new util.File({
+                            path: entry.path,
+                            contents: entry
+                        }));
+                    });
+
+            });
+
         }
 
         return through2.obj(function (file, enc, cb) {
