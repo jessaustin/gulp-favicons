@@ -38,18 +38,14 @@
 
                 if (file.isNull()) {
                     cb(null, file);
-                    return;
-                }
-
-                if (file.isStream()) {
+                } else if (file.isStream()) {
                     cb(new util.PluginError('gulp-favicons',
                             'Streaming not supported'));
-                    return;
+                } else {
+                    options.data.favicon_generation.master_picture = { type:
+                        'inline', content: file.contents.toString('base64') };
+                    cb();
                 }
-
-                options.data.favicon_generation.master_picture = { type: 'inline', content: file.contents.toString('base64') };
-
-                return cb();
 
             }, function (cb) {
 
@@ -69,7 +65,8 @@
                             path: entry.path,
                             contents: entry
                         }));
-                    });
+                    })
+                    .on('end', cb);
 
             });
 
